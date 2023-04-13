@@ -125,14 +125,14 @@ These are the steps to follow to execute the Pipeline, run in terminal:
 `chmod +x bash_scripts/fetching_data.sh bash_scripts/uploading_data.sh bash_scripts/crm_gcs_to_bq.sh bash_scripts/dev_gcs_to_bq.sh bash_scripts/rev_gcs_to_bq.sh`
 	
 
-2.- MAKE SURE TO SPECIFY **YOUR BUCKET NAME** WITHIN YOUR BASH FILES:
+2.- YOU WILL NEED A BUCKET IN GCP ENABLED AND MAKE SURE TO SPECIFY **YOUR BUCKET NAME** WITHIN THE BASH FILES:
 
 - bash_scripts/crm_gcs_to_bq.sh 
 - bash_scripts/dev_gcs_to_bq.sh 
 - bash_scripts/rev_gcs_to_bq.sh
 	
 
-3.- ENABLE THE DESIRED ENVIRONMENT (CONDA OR VENV)
+3.- ACTIVATE THE DESIRED ENVIRONMENT (CONDA OR VENV)
 	
 
 4.- RUN PREFECT ORION SERVER, BUT FIRST ACTIVATE ANACONDA BASE ENVIRONMENT:
@@ -155,7 +155,7 @@ These are the steps to follow to execute the Pipeline, run in terminal:
 `gcloud config set project <PROJECT ID>`
 	
 
-8.- CREATE THE DIRS AT YOUR CLOUD STORAGE, FOR STORING THE DATA LAKE:
+8.- YOU SHOULD CREATE THESE DIRS AT YOUR CLOUD STORAGE, FOR STORING THE DATA LAKE:
 
 - data/telecomm/csv_gz/crm/
 - data/telecomm/csv_gz/dev/
@@ -172,20 +172,20 @@ These are the steps to follow to execute the Pipeline, run in terminal:
 `python3 Pipelines/GCSToBQ_Pipeline.py`
 
 
-11.- INIT DBT:
+11.- AFTER PIPELINES FINISHED SUCCESSFULLY, INIT DBT:
 
 `dbt init`
 	
 
 12.- CONFIGURE WITH THIS REQUIREMENTS WHEN dbt init:
 
-`bigquery` (This implies that dbt should be installed along with bigquery adapter)
-`service_account` (Specify the path of the JSON file key for Service Account)
-`GCP project id`  (Specify Project's ID)
-`dbt_Analytics_Telecomm`  (suggested dbt dataset name, change if desire)
-`threads = 1`
-`job_execution_timeout_seconds = 300`
-`US` (Desired location or of your preference)
+- `bigquery` (This implies that dbt should be installed along with bigquery adapter)
+- `service_account` (Specify the path of the JSON file key for Service Account)
+- `GCP project id`  (Specify Project's ID)
+- `dbt_Analytics_Telecomm`  (suggested dbt dataset name, change if desire)
+- `threads = 1`
+- `job_execution_timeout_seconds = 300`
+- `US` (Desired location or of your preference)
 
 
 13.- Check if the files required are in the same folder before running dbt:
@@ -224,7 +224,7 @@ THE **stg_crm** HOLDS A VIEW FROM external_CRM TABLE.
 https://towardsdatascience.com/how-to-test-pyspark-etl-data-pipeline-1c5a6ab6a04b
 
 
-## WEBSITE LINKS:
+## USEFUL WEBSITE LINKS:
 
 - EXPORTING GCS TO BIGQUERY:
 
