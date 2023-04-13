@@ -1,0 +1,10 @@
+dtc-de-course-375103-4bfb7cb6332b.json
+TelecommDataFrame.ipynb
+dbt_packages/
+Dashboards/
+data/
+target/
+terraform.tfstate
+logs/
+.*
+!/.gitignore

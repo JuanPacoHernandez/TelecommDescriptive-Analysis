@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+    - name: staging
+      database: dtc-de-course-375103
+      schema: dbt_Analytics_Telecomm
+      tables:
+        - name: external_CRM
+
+models:
+    - name: stg_crm
+      description: A CRM table with information about non-sensible data customers.
+      columns:
+          - name: msisdn
+            description: Unique identification number assigned to each mobile number.
+            tests:
+                - unique:
+                    severity: warn
+                - not_null:
+                    severity: warn
+          - name: gender 
+            description: Sex of the customer using the mobile service.
+          - name: year_of_birth
+            description: Year of birth of the customer.
+          - name: system_status
+            description: Indicates the status of the mobile service being used by the customer.
+          - name: mobile_type 
+            description: Customers can choose their service as prepaid or postpaid.
+          - name: value_segment 
+            description: Segmentation based on how well the customer matches the business goals.
+          

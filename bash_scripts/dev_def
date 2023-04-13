@@ -1,0 +1,15 @@
+{
+  "csvOptions": {
+    "allowJaggedRows": false,
+    "allowQuotedNewlines": false,
+    "encoding": "UTF-8",
+    "fieldDelimiter": ",",
+    "preserveAsciiControlCharacters": false,
+    "quote": "\"",
+    "skipLeadingRows": 0
+  },
+  "sourceFormat": "CSV",
+  "sourceUris": [
+    "gs://prefect-de-zoomcamp-jfcohdz/data/telecomm/csv_gz/dev/*.csv.gz"
+  ]
+}
