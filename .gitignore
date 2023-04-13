@@ -1,4 +1,5 @@
 TelecommDataFrame.ipynb
+dtc-de-course-375103-4bfb7cb6332b.json
 dbt_packages/
 Dashboards/
 data/
@@ -6,4 +7,3 @@ target/
 terraform.tfstate
 logs/
 .*
-!/.gitignore
