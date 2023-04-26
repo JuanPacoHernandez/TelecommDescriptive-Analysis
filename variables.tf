@@ -1,14 +1,14 @@
 locals {
-  data_lake_bucket = "prefect-de-zoomcamp-jfcohdz"
+  data_lake_bucket = "telecomm"
 }
 
 variable "project" {
-  description = "dtc-de-course-375103 "
+  description = "YOUR PROJECT ID"
 }
 
 variable "region" {
   description = "Region for GCP resources. Choose as per your location: https://cloud.google.com/about/locations"
-  default     = "us"
+  default     = "YOUR REGION"
   type        = string
 }
 
@@ -20,5 +20,5 @@ variable "storage_class" {
 variable "BQ_DATASET" {
   description = "BigQuery Dataset that raw data (from GCS) will be written to"
   type        = string
-  default     = " dbt_Analytics_Telecomm"
+  default     = "dbt_Analytics_Telecomm"
 }

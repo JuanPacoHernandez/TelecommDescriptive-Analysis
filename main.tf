@@ -20,7 +20,7 @@ provider "google" {
 # Data Lake Bucket - PREDEFINED DEFINITION MODULE
 # Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket
 resource "google_storage_bucket" "data-lake-bucket" {
-  name     = "${local.data_lake_bucket}_${var.project}" # CONCATENATING DL BUCKET & PROJECT NAME FOR UNIQUE NAMING
+  name     = "${local.data_lake_bucket}-${var.project}" # CONCATENATING DL BUCKET & PROJECT NAME FOR UNIQUE NAMING
   location = var.region
 
   # Optional, but recommended settings:

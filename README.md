@@ -84,7 +84,7 @@ When performing Data ingestion, using Batch Processing, this project use PySpark
 - **Transform** for cleansing stage using PySpark, and 
 - **Load**, using Bash commands, this stage is splitted in two Loads, the first Load is to push the datasets into a Data Lake in a Bucket located in Cloud Storage (GCP), the second Load is to push datasets from Cloud Storage into BigQuery Tables.
 
-The **webToGCS_Pipeline.py** python3 file is a Pipeline to process the datasets in Batches and putting them to a Data Lake in GCP, this file contains the **Extract**, **Transform**, and **Load** to GCP (Data Lake) stages.
+The **webToGCS_Pipeline.py** python3 file is a Pipeline to process the datasets in Batches and putting them to a Data Lake (called **telecomm-<YOUR PROJECT ID>**) in GCP, this file contains the **Extract**, **Transform**, and **Load** to GCP (Data Lake) stages.
 
 This python file uses scripts in Bash to perform fetching data, **fetching_data.sh** download the datasets from Kaggle's API, unzip the datasets and move to a "data" dir, at the end the script removes the downloaded zipped file from Kaggle. After that, this python file perform clean and filter processes over the datasets to finally upload the datasets in a Data Lake in GCP Cloud Storage running a Bash script **uploading_data.sh**.
 
@@ -92,7 +92,9 @@ This python file uses scripts in Bash to perform fetching data, **fetching_data.
 
 ## DATA WAREHOUSE
 
-For housing the Data Warehouse, BigQuery was the choice to take advantage of the free credit for first use. Also to leverage BigQuery's external tables, the Partitioning by (using dbt core), and the Clustering by (using dbt core) to create an optimized table and hence reducing billing when Data Analysts, Data Scientists and Stakeholders need consuming data. The next IAM permissions and roles should be enabled:
+For housing the Data Warehouse, BigQuery was the choice to take advantage of the free credit for first use. Also to leverage BigQuery's external tables, the Partitioning by (using dbt core), and the Clustering by (using dbt core) to create an optimized table and hence reducing billing when Data Analysts, Data Scientists and Stakeholders need consuming data. The Data Warehouse is called **dbt_Analytics_Telecomm**.
+
+The next IAM permissions and roles should be enabled:
 
 - Store Admin
 - BigQuery Admin
@@ -109,7 +111,7 @@ Remembering that for Dashboard crafting purposes only CRM dataset is enough to p
 
 ## DASHBOARD
 
-The Dashboard was crafted in Looker Studio (before Data Studio):
+The Dashboard was crafted in Looker Studio (before Data Studio), the Dashboard will be available as soon as Free Credit would be consumed:
 
 [(https://lookerstudio.google.com/reporting/59c58893-a921-40c6-a39c-ad224e19e04f)]
 
@@ -118,110 +120,93 @@ I use a Pie chart for describing the **Telecomm customers gender distribution** 
 
 ## REPRODUCIBILITY
 
-These are the steps to follow to execute the Pipeline, run in terminal:
+PREVIOUS REQUIREMENTS BEFORE RUN THE PIPELINE:
 
-1.- ALLOW PERMISSIONS TO BASH SCRIPTS INCLUDED IN THE REPO:
+1.- Specify **YOUR PROJECT ID** within those files in the indicated line number:
 
-`chmod +x bash_scripts/fetching_data.sh bash_scripts/uploading_data.sh bash_scripts/crm_gcs_to_bq.sh bash_scripts/dev_gcs_to_bq.sh bash_scripts/rev_gcs_to_bq.sh`
-	
+- **variables.tf** (LINE 6)
+- **bash_scripts/crm_gcs_to_bq.sh** (LINE 7)
+- **bash_scripts/dev_gcs_to_bq.sh** (LINE 7)
+- **bash_scripts/rev_gcs_to_bq.sh** (LINE 7)
+- **completePipeline_pt1.sh** (LINE 6)
+- **completePipeline_pt1.sh** (LINE 7)
+- **completePipeline_pt2.sh** (LINE 17)
+- **completePipeline_pt2.sh** (LINE 21)
 
-2.- YOU WILL NEED A BUCKET IN GCP ENABLED AND MAKE SURE TO SPECIFY **YOUR BUCKET NAME** WITHIN THE BASH FILES:
+2.- Specify **YOUR REGION** within those files in the indicated line number:
 
-- bash_scripts/crm_gcs_to_bq.sh 
-- bash_scripts/dev_gcs_to_bq.sh 
-- bash_scripts/rev_gcs_to_bq.sh
-	
+- **variables.tf** (LINE 11)
 
-3.- ACTIVATE THE DESIRED ENVIRONMENT (CONDA OR VENV)
-	
+3.- Specify the **PATH FOR YOUR ENVIRONMENT** within those files in the indicated line number:
 
-4.- RUN PREFECT ORION SERVER, BUT FIRST ACTIVATE ANACONDA BASE ENVIRONMENT:
+- **completePipeline_pt1.sh** (LINE 16)
+- **completePipeline_pt2.sh** (LINE 5)
 
-`prefect orion start`
-
-
-5.- THEN SET A CONFIGURATION, IF YOU WANT TO OBSERVE THE PROCESS THROUGH UI PANEL:
-
-`prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api`
+4.- Download your key Service Account JSON file in the same directory where files from repo were cloned
 
 
-6.- SET gcloud AUTHORIZATION:
+### PIPELINE DETAILS:
 
-`gcloud auth login`
+There are two files to accomplish the whole Pipeline, **completePipeline_pt1.sh** and **completePipeline_pt2.sh**. First of all, grant permissions to those files:
 
+`chmod +x completePipeline_pt1.sh completePipeline_pt2.sh`
 
-7.- SET PROJECT ID, FROM GCP PROJECT ID:
+Then run it in terminal, **pay attention when Terraform process validations ocurrs, like typing yes when asking**:
 
-`gcloud config set project <PROJECT ID>`
-	
+`./completePipeline_pt1.sh`
 
-8.- YOU SHOULD CREATE THESE DIRS AT YOUR CLOUD STORAGE, FOR STORING THE DATA LAKE:
+This previous part of the Pipeline will execute up to Prefect framework, so when you can see the Prefect Orion interface in Terminal then run the second part of the Pipeline in another terminal:
 
-- data/telecomm/csv_gz/crm/
-- data/telecomm/csv_gz/dev/
-- data/telecomm/csv_gz/rev/
+`./completePipeline_pt2.sh`
 
+Next, allow permissions to Google Cloud SDK Authentications in the WebBrowser tab.
 
-9.- RUN PIPELINE FOR EXTRACT, TRANSFORM AND LOAD TO DATA LAKE:
+Then, you will be asked to **create** three dirs at your Cloud Storage Bucket:
 
-`python3 Pipelines/webToGCS_Pipeline.py`
+- telecomm-**YOUR PROJECT ID**/data/telecomm/csv_gz/crm/
+- telecomm-**YOUR PROJECT ID**/data/telecomm/csv_gz/dev/
+- telecomm-**YOUR PROJECT ID**/data/telecomm/csv_gz/rev/
 
+Create them to continue.
 
-10.- RUN PIPELINE FOR LOAD EXTERNAL TABLE INTO DATA WAREHOUSE:
-
-`python3 Pipelines/GCSToBQ_Pipeline.py`
-
-
-11.- AFTER PIPELINES FINISHED SUCCESSFULLY, INIT DBT:
-
-`dbt init`
-	
-
-12.- CONFIGURE WITH THIS REQUIREMENTS WHEN dbt init:
+Next, you will be asked for configuring dbt init parameters:
 
 - `bigquery` (This implies that dbt should be installed along with bigquery adapter)
-- `service_account` (Specify the path of the JSON file key for Service Account)
+- `service_account` (Specify the path of the JSON key file for Service Account)
 - `GCP project id`  (Specify Project's ID)
-- `dbt_Analytics_Telecomm`  (suggested dbt dataset name, change if desire)
+- `dbt_Analytics_Telecomm`  (suggested dbt dataset name)
 - `threads = 1`
 - `job_execution_timeout_seconds = 300`
 - `US` (Desired location or of your preference)
 
 
-13.- Check if the files required are in the same folder before running dbt:
+Once the part 2 of the Pipeline finish, the Data Lake holds the Datasets in dir:
 
-- **/models/staging/stag_crm.sql**
-- **/models/stating/schema.yml**
-- **/models/core/fact_crm.sql**
-- **/models/core/schema.yml**
-- **/dbt_project.yml**
+**telecomm-**YOUR PROJECT ID**/data/telecomm/csv_gz**
 
-
-14.- THE RUN ALL MODELS:
-
-`dbt run`
-	
-	
-AT THIS TIME, DATA LAKE HOLDS THE DATASETS FROM KAGGLE API WITHIN THE DIR:
-
-**data/telecomm/csv_gz**
-
-BIGQUERY HOLDS EXTERNAL TABLES:
+and also Data Warehouse holds the external tables:
 
 - **external_CRM**
 - **external_DEV**
 - **external_REV** 
 
-AND ALSO BIGQUERY HOLDS THE PARTITIONED AND CLUSTERED TABLE FOR CRM TABLE, REMEMBER THAT FOR CRAFTING THE DASHBOARD IT'S ONLY CRM TABLE NEEDED, SO NOW IT IS POSSIBLE TO CRAFT A DASHBOARD WORKING FROM THIS BIGQUERY TABLE:
+Data Warehouse also holds the fact table (Partitioned and Clustered):
+
 **fact_crm**
 
-THE **stg_crm** HOLDS A VIEW FROM external_CRM TABLE.
+**stg_crm** (VIEW FROM external_CRM TABLE)
+
+Now you can create the Dashboard in Looker Studio, known before s Data Studio.
+
+Once Dashboard was crafted, then destroy all terraform resources, avoiding undesired billings, by runnning in terminal:
+
+`terraform destroy`
 
 
 
 ## TESTING STAGE
 
-https://towardsdatascience.com/how-to-test-pyspark-etl-data-pipeline-1c5a6ab6a04b
+Adding test stage to the project by **test_GCSToBQ_Pipeline.py** and **test_webToGCS_Pipeline.py**
 
 
 ## USEFUL WEBSITE LINKS:
@@ -255,6 +240,10 @@ https://towardsdatascience.com/how-to-test-pyspark-etl-data-pipeline-1c5a6ab6a04
 - CLUSTERRED BY DBT CLOUD:
 
 [(https://docs.getdbt.com/reference/resource-configs/bigquery-configs#clustering-clause)]
+
+- TESTING PYSPARK ETL DATA PIPELINES:
+
+[(https://towardsdatascience.com/how-to-test-pyspark-etl-data-pipeline-1c5a6ab6a04b)]
 
 
 
