@@ -115,6 +115,8 @@ The Dashboard was crafted in Looker Studio (before Data Studio), the Dashboard w
 
 [(https://lookerstudio.google.com/reporting/59c58893-a921-40c6-a39c-ad224e19e04f)]
 
+*In case of that the Dashboard is not showing in shared public Looker Studio feature, the Dashboard dir in this repo stores it.*
+
 I use a Pie chart for describing the **Telecomm customers gender distribution** and a 100% Stacked bar for showing the **Frequency of Telecomm customers by year of birth and by gender**.
 
 
