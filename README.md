@@ -206,10 +206,6 @@ Once Dashboard was crafted, then destroy all terraform resources, avoiding undes
 
 
 
-## TESTING STAGE
-
-Adding test stage to the project by **test_GCSToBQ_Pipeline.py** and **test_webToGCS_Pipeline.py**
-
 
 ## USEFUL WEBSITE LINKS:
 
