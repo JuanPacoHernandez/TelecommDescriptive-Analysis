@@ -84,7 +84,7 @@ When performing Data ingestion, using Batch Processing, this project use PySpark
 - **Transform** for cleansing stage using PySpark, and 
 - **Load**, using Bash commands, this stage is splitted in two Loads, the first Load is to push the datasets into a Data Lake in a Bucket located in Cloud Storage (GCP), the second Load is to push datasets from Cloud Storage into BigQuery Tables.
 
-The **webToGCS_Pipeline.py** python3 file is a Pipeline to process the datasets in Batches and putting them to a Data Lake (called **telecomm-<YOUR PROJECT ID>**) in GCP, this file contains the **Extract**, **Transform**, and **Load** to GCP (Data Lake) stages.
+The **webToGCS_Pipeline.py** python3 file, within Pipelines dir, is a Pipeline to process the datasets in Batches and putting them to a Data Lake (called **telecomm-<YOUR PROJECT ID>**) in GCP, this file contains the **Extract**, **Transform**, and **Load** to GCP (Data Lake) stages.
 
 This python file uses scripts in Bash to perform fetching data, **fetching_data.sh** download the datasets from Kaggle's API, unzip the datasets and move to a "data" dir, at the end the script removes the downloaded zipped file from Kaggle. After that, this python file perform clean and filter processes over the datasets to finally upload the datasets in a Data Lake in GCP Cloud Storage running a Bash script **uploading_data.sh**.
 
@@ -106,7 +106,7 @@ As I mentioned previously, the second **Load** is to transfer data from GCP Buck
 
 ## TRANSFORMATIONS
 
-Remembering that for Dashboard crafting purposes only CRM dataset is enough to perform the two tiles, so by using dbt cloud or dbt core will help to Transformate our CRM external table in a more efficient way, in the dbt model **fact_crm.sql** I include a **Partition** by "year_of_birth" column from CRM table and also I include a **Cluster** by "gender" column, this improve the reading time of the table achieving less billing in GCP. Prior running the **fact_crm.sql** model is mandatory to run **stg_crm.sql** model which it bring the view from an external table, stored at BigQuery after the Loading stage performed by **GCSToBQ_Pipeline.py**. 
+Remembering that for Dashboard crafting purposes only CRM dataset is enough to perform the two tiles, so by using dbt cloud or dbt core will help to Transformate our CRM external table in a more efficient way, in the dbt model **fact_crm.sql** I include a **Partition** by "year_of_birth" column from CRM table and also I include a **Cluster** by "gender" column, this improve the reading time of the table achieving less billing in GCP. Prior running the **fact_crm.sql** model is mandatory to run **stg_crm.sql** model which it bring the view from an external table, stored at BigQuery after the Loading stage performed by **GCSToBQ_Pipeline.py**. The **dbt_project.yml** of this project would be useful without need to create another one.
 
 
 ## DASHBOARD
@@ -115,16 +115,27 @@ The Dashboard was crafted in Looker Studio (before Data Studio), the Dashboard w
 
 [(https://lookerstudio.google.com/reporting/59c58893-a921-40c6-a39c-ad224e19e04f)]
 
-*In case of that the Dashboard is not showing in shared public Looker Studio feature, the Dashboard dir in this repo stores it.*
+*In case of that the Dashboard is not showing in shared public Looker Studio feature, the Dashboard dir, in this repo, stores it.*
 
 I use a Pie chart for describing the **Telecomm customers gender distribution** and a 100% Stacked bar for showing the **Frequency of Telecomm customers by year of birth and by gender**.
 
 
 ## REPRODUCIBILITY
 
-PREVIOUS REQUIREMENTS BEFORE RUN THE PIPELINE:
+THERE ARE FIVE PREVIOUS REQUIREMENTS BEFORE RUN THE PIPELINE:
 
-1.- Specify **YOUR PROJECT ID** within those files in the indicated line number:
+1.- Clone the repo
+
+2.- You will need to:
+
+- enable a Project in GCP
+- enable a Service Account in GCP
+- set BigQuery Admin, Storing Admin, Environment and Storing Object Admin, Visualizer roles in IAM service within the Project in GCP
+- create a Bucket in Cloud Storage service
+- create a Dataset in BigQuery
+- download your key Service Account JSON file in the same directory where files from repo were cloned
+
+3.- Specify **YOUR PROJECT ID** within those files in the indicated line number:
 
 - **variables.tf** (LINE 6)
 - **bash_scripts/crm_gcs_to_bq.sh** (LINE 7)
@@ -135,19 +146,19 @@ PREVIOUS REQUIREMENTS BEFORE RUN THE PIPELINE:
 - **completePipeline_pt2.sh** (LINE 17)
 - **completePipeline_pt2.sh** (LINE 21)
 
-2.- Specify **YOUR REGION** within those files in the indicated line number:
+4.- Specify **YOUR REGION** within those files in the indicated line number:
 
 - **variables.tf** (LINE 11)
 
-3.- Specify the **PATH FOR YOUR ENVIRONMENT** within those files in the indicated line number:
+5.- Specify the **PATH FOR YOUR ENVIRONMENT** within those files in the indicated line number:
 
 - **completePipeline_pt1.sh** (LINE 16)
 - **completePipeline_pt2.sh** (LINE 5)
 
-4.- Download your key Service Account JSON file in the same directory where files from repo were cloned
 
 
-### PIPELINE DETAILS:
+
+### TO RUN THE PIPELINE:
 
 There are two files to accomplish the whole Pipeline, **completePipeline_pt1.sh** and **completePipeline_pt2.sh**. First of all, grant permissions to those files:
 
@@ -203,8 +214,6 @@ Now you can create the Dashboard in Looker Studio, known before s Data Studio.
 Once Dashboard was crafted, then destroy all terraform resources, avoiding undesired billings, by runnning in terminal:
 
 `terraform destroy`
-
-
 
 
 ## USEFUL WEBSITE LINKS:
